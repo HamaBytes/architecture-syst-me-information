@@ -11,6 +11,8 @@ import tn.esprit.autoloc.domain.Vehicule;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 @SpringBootTest
 public class AgenceTests {
     @Autowired
@@ -46,6 +48,20 @@ public class AgenceTests {
         agence.getVehicules().add(v2);
 
         agenceRepository.save(agence);
+    }
+
+    @Test
+    public void loadAgence() {
+        Iterable<Agence> agences = agenceRepository.findAll();
+        StringBuilder sb = new StringBuilder();
+        for (Agence agence : agences) {
+            sb.append("\n").append(agence.getIdAgence()).append(" | ").append(agence.getNom());
+            sb.append("\nVehicules Count : ").append(agence.getVehicules().size());
+            for (Vehicule vehicule : agence.getVehicules()) {
+                sb.append("\n=== ").append(vehicule.getIdVehicule()).append("|").append(vehicule.getImmatriculation());
+            }
+        }
+        fail(sb.toString());
     }
 
 }

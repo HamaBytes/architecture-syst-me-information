@@ -30,4 +30,6 @@ public class Agence {
     @OneToMany(mappedBy = "agence", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Vehicule> vehicules = new ArrayList<>();
 
+    @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    private List<Employee> employes = new ArrayList<>();
 }

@@ -25,4 +25,7 @@ public class Contrat {
 
     @Column(nullable = false)
     private Boolean valide;
+
+    @OneToMany(mappedBy = "contrat", fetch = FetchType.EAGER)
+    private List<Paiement> paiements = new ArrayList<>();
 }
