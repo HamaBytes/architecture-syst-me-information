@@ -36,8 +36,8 @@ public class Vehicule {
     @Column(nullable = false, length = 20)
     private StatutVehicule statut;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_agence", nullable = false)
+    @ManyToOne(optional = true, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "id_agence", nullable = true)
     private Agence agence;
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
