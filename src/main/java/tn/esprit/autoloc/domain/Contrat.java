@@ -25,11 +25,4 @@ public class Contrat {
 
     @Column(nullable = false)
     private Boolean valide;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_reservation", nullable = false, unique = true)
-    private Reservation reservation;
-
-    @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Paiement> paiements = new ArrayList<>();
 }

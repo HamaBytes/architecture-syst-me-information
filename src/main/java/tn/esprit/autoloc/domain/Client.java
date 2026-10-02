@@ -33,7 +33,4 @@ public class Client {
 
     @Column(nullable = false)
     private LocalDate dateInscription;
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<Reservation> reservations = new ArrayList<>();
 }

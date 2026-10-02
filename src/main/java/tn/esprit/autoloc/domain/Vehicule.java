@@ -40,17 +40,4 @@ public class Vehicule {
     @JoinColumn(name = "id_agence", nullable = true)
     private Agence agence;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "vehicule_equipment",
-        joinColumns = @JoinColumn(name = "id_vehicule"),
-        inverseJoinColumns = @JoinColumn(name = "id_equipment")
-    )
-    private List<Equipment> equipments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "vehicule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<Reservation> reservations = new ArrayList<>();
-
-    @OneToMany(mappedBy = "vehicule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<Maintenance> maintenances = new ArrayList<>();
 }

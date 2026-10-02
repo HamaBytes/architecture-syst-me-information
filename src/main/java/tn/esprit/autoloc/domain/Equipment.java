@@ -17,7 +17,4 @@ public class Equipment {
 
     @Column(nullable = false, length = 100)
     private String libelle;
-
-    @ManyToMany(mappedBy = "equipments", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<Vehicule> vehicules = new ArrayList<>();
 }
