@@ -2,6 +2,7 @@ package tn.esprit.autoloc.service;
 
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.Utils;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
@@ -14,11 +15,16 @@ import java.util.List;
 public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implements IAgenceService {
     private final IAgenceRepository agenceRepository;
     private final IVehiculeRepository vehiculeRepository;
+    private final IVehiculeService vehiculeService;
 
-    public AgenceServiceImpl(IAgenceRepository agenceRepository, IVehiculeRepository vehiculeRepository) {
+    public AgenceServiceImpl(
+            IAgenceRepository agenceRepository,
+            IVehiculeRepository vehiculeRepository,
+            IVehiculeService vehiculeService) {
         super(agenceRepository);
         this.agenceRepository = agenceRepository;
         this.vehiculeRepository = vehiculeRepository;
+        this.vehiculeService = vehiculeService;
     }
 
     @Override
@@ -63,5 +69,26 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
     public boolean hasVehicules(Long id) {
         findById(id);
         return vehiculeRepository.existsByAgence_IdAgence(id);
+    }
+
+    @Override
+    public String simuler(Long id, int nombreJours, VehiculeOffre offre) {
+        if (nombreJours <= 0) {
+            throw new IllegalArgumentException("Le nombre de jours doit être positif.");
+        }
+        if (offre == null) {
+            throw new IllegalArgumentException("L'offre est obligatoire.");
+        }
+
+        Agence agence = findById(id);
+        List<Vehicule> vehicules = vehiculeRepository.findByAgence_IdAgence(id);
+        double total = vehicules.stream()
+                .mapToDouble(vehicule -> vehiculeService.calculTarif(vehicule, nombreJours, offre))
+                .sum();
+
+        return "Agence " + agence.getIdAgence() + " | " + agence.getNom()
+                + " | " + agence.getTelephone()
+                + System.lineSeparator() + "Total des tarifs (" + nombreJours + " jours, " + offre + ") : "
+                + String.format(java.util.Locale.ROOT, "%.2f", total);
     }
 }

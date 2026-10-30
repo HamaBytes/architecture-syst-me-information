@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import tn.esprit.autoloc.domain.Agence;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.service.IAgenceService;
 
@@ -127,5 +128,18 @@ class AgenceControllerTests {
     void deleteAgencyReturnsNoContent() throws Exception {
         mockMvc.perform(delete("/agences/3"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void simulateAgencyAcceptsDurationAndOfferQueryParameters() throws Exception {
+        when(agenceService.simuler(3L, 2, VehiculeOffre.WEEKEND))
+                .thenReturn("Agence 3 | Agence Sfax | 72000000\nTotal des tarifs (2 jours, WEEKEND) : 160.00");
+
+        mockMvc.perform(get("/agences/3/simuler")
+                        .param("nombreJours", "2")
+                        .param("offre", "WEEKEND"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                        .string(org.hamcrest.Matchers.containsString("160.00")));
     }
 }

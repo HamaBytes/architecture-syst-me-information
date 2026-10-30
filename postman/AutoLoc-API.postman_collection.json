@@ -30,6 +30,70 @@
           ]
         },
         {
+          "name": "Simulation-standard",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}/simuler?nombreJours=2&offre=STANDARD"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Rapport de simulation retourné', function () {",
+                  "  pm.expect(pm.response.text()).to.include('STANDARD');",
+                  "  pm.expect(pm.response.text()).to.include('Total des tarifs');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Simulation-weekend",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}/simuler?nombreJours=2&offre=WEEKEND"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Offre WEEKEND dans le rapport', function () {",
+                  "  pm.expect(pm.response.text()).to.include('WEEKEND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Simulation-longue-duree",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}/simuler?nombreJours=2&offre=LONGUE_DUREE"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Offre LONGUE_DUREE dans le rapport', function () {",
+                  "  pm.expect(pm.response.text()).to.include('LONGUE_DUREE');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Ajout-sans-id",
           "request": {
             "method": "POST",

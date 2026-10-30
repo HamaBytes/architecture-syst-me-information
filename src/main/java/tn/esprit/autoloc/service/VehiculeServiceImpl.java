@@ -2,6 +2,7 @@ package tn.esprit.autoloc.service;
 
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.Utils;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
 
@@ -42,5 +43,28 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
                 && vehicule.getCategorie() != null
                 && vehicule.getTarifJournalier() != null
                 && vehicule.getStatut() != null;
+    }
+
+    @Override
+    public double calculTarif(Vehicule vehicule, int nombreJours, VehiculeOffre offre) {
+        if (vehicule == null || vehicule.getTarifJournalier() == null) {
+            throw new IllegalArgumentException("Le véhicule et son tarif journalier sont obligatoires.");
+        }
+        if (nombreJours <= 0) {
+            throw new IllegalArgumentException("Le nombre de jours doit être positif.");
+        }
+        if (offre == null) {
+            throw new IllegalArgumentException("L'offre est obligatoire.");
+        }
+
+        double tarif = vehicule.getTarifJournalier().doubleValue() * nombreJours;
+        return switch (offre) {
+            case STANDARD -> tarif;
+            case WEEKEND -> tarif * 0.80;
+            case LONGUE_DUREE -> {
+                double tarifReduit = tarif * 0.75;
+                yield tarifReduit > 2000 ? tarifReduit * 0.95 : tarifReduit;
+            }
+        };
     }
 }

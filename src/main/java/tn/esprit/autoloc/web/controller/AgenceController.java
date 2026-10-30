@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.service.IAgenceService;
 
@@ -76,6 +78,15 @@ public class AgenceController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         agenceService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/simuler")
+    @Operation(summary = "Simuler le coût des véhicules d'une agence")
+    public String simuler(
+            @PathVariable Long id,
+            @Parameter(description = "Nombre de jours de location") @RequestParam int nombreJours,
+            @Parameter(description = "Type d'offre") @RequestParam VehiculeOffre offre) {
+        return agenceService.simuler(id, nombreJours, offre);
     }
 
 }

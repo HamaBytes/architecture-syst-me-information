@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IReservationService;
 @Tag(name = "Reservations")
 public class ReservationController extends GenericCrudController<Reservation> {
     public ReservationController(IReservationService service) {
-        super(service, service);
+        super(service);
     }
 }

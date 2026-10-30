@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IEmployeeService;
 @Tag(name = "Employees")
 public class EmployeeController extends GenericCrudController<Employee> {
     public EmployeeController(IEmployeeService service) {
-        super(service, service);
+        super(service);
     }
 }

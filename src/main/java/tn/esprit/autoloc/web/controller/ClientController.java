@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IClientService;
 @Tag(name = "Clients")
 public class ClientController extends GenericCrudController<Client> {
     public ClientController(IClientService service) {
-        super(service, service);
+        super(service);
     }
 }

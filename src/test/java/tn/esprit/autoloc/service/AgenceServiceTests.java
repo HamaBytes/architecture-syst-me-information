@@ -2,6 +2,7 @@ package tn.esprit.autoloc.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -24,13 +26,15 @@ import static org.mockito.Mockito.when;
 class AgenceServiceTests {
     private IAgenceRepository agenceRepository;
     private IVehiculeRepository vehiculeRepository;
+    private IVehiculeService vehiculeService;
     private AgenceServiceImpl service;
 
     @BeforeEach
     void setUp() {
         agenceRepository = mock(IAgenceRepository.class);
         vehiculeRepository = mock(IVehiculeRepository.class);
-        service = new AgenceServiceImpl(agenceRepository, vehiculeRepository);
+        vehiculeService = mock(IVehiculeService.class);
+        service = new AgenceServiceImpl(agenceRepository, vehiculeRepository, vehiculeService);
     }
 
     @Test
@@ -94,6 +98,31 @@ class AgenceServiceTests {
         assertNull(vehicule.getAgence());
         verify(vehiculeRepository).saveAll(List.of(vehicule));
         verify(agenceRepository).deleteById(4L);
+    }
+
+    @Test
+    void simulerReturnsAgencyHeaderAndTotalVehiclePrice() {
+        Agence agence = validAgence();
+        agence.setIdAgence(4L);
+        Vehicule first = new Vehicule();
+        Vehicule second = new Vehicule();
+        when(agenceRepository.findById(4L)).thenReturn(Optional.of(agence));
+        when(vehiculeRepository.findByAgence_IdAgence(4L)).thenReturn(List.of(first, second));
+        when(vehiculeService.calculTarif(first, 3, VehiculeOffre.STANDARD)).thenReturn(300.0);
+        when(vehiculeService.calculTarif(second, 3, VehiculeOffre.STANDARD)).thenReturn(240.0);
+
+        String report = service.simuler(4L, 3, VehiculeOffre.STANDARD);
+
+        org.junit.jupiter.api.Assertions.assertAll(
+                () -> assertTrue(report.contains("4 | Agence Tunis | 71000000")),
+                () -> assertTrue(report.contains("3 jours, STANDARD")),
+                () -> assertTrue(report.contains("540.00"))
+        );
+    }
+
+    @Test
+    void simulerRejectsNonPositiveDuration() {
+        assertThrows(IllegalArgumentException.class, () -> service.simuler(4L, 0, VehiculeOffre.STANDARD));
     }
 
     private static Agence validAgence() {
