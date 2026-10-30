@@ -1,0 +1,238 @@
+{
+  "info": {
+    "name": "AutoLoc-API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Agences",
+      "item": [
+        {
+          "name": "Liste",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Réponse JSON sous forme de liste', function () {",
+                  "  pm.response.to.be.json;",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajout-sans-id",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Agence atelier\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"1 rue de Tunis\",\n  \"telephone\": \"71000000\"\n}"
+            },
+            "url": "{{asiApiUrl}}/agences"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Identifiant généré', function () {",
+                  "  const agence = pm.response.json();",
+                  "  pm.expect(agence.idAgence).to.exist;",
+                  "  pm.environment.set('agenceId', agence.idAgence);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultation-existant",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Agence retournée', function () {",
+                  "  pm.expect(pm.response.json().idAgence).to.eql(Number(pm.environment.get('agenceId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultation-inexistant",
+          "request": {
+            "method": "GET",
+            "url": "{{asiApiUrl}}/agences/999999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Corps d’erreur JSON', function () {",
+                  "  pm.response.to.be.json;",
+                  "  pm.expect(pm.response.json().status).to.eql(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajout-avec-id",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idAgence\": 999999999,\n  \"nom\": \"Agence avec identifiant\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"2 rue de Tunis\",\n  \"telephone\": \"71000001\"\n}"
+            },
+            "url": "{{asiApiUrl}}/agences"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Message de validation', function () {",
+                  "  pm.expect(pm.response.json().message).to.include('identifiant');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modification-existant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Agence atelier modifiée\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"3 rue de Tunis\",\n  \"telephone\": \"71000002\"\n}"
+            },
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Agence modifiée', function () {",
+                  "  pm.expect(pm.response.json().nom).to.eql('Agence atelier modifiée');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modification-inexistant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Agence absente\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"4 rue de Tunis\",\n  \"telephone\": \"71000003\"\n}"
+            },
+            "url": "{{asiApiUrl}}/agences/999999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Suppression-existant",
+          "request": {
+            "method": "DELETE",
+            "url": "{{asiApiUrl}}/agences/{{agenceId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content', function () { pm.response.to.have.status(204); });",
+                  "pm.test('Réponse sans corps', function () { pm.expect(pm.response.text()).to.eql(''); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Suppression-inexistant",
+          "request": {
+            "method": "DELETE",
+            "url": "{{asiApiUrl}}/agences/999999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package tn.esprit.autoloc.domain;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import java.math.*;
 import java.util.*;
@@ -38,9 +39,11 @@ public class Vehicule {
 
     @ManyToOne(optional = true, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_agence", nullable = true)
+    @JsonIgnoreProperties({"vehicules", "employes"})
     private Agence agence;
 
     @OneToMany(mappedBy = "vehicule", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"vehicule", "client", "contrat"})
     private List<Reservation> reservations = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)

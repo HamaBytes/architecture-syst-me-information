@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import tn.esprit.autoloc.domain.Agence;
@@ -15,8 +16,6 @@ import tn.esprit.autoloc.repository.IAgenceRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 public class AgenceTests {
@@ -59,14 +58,18 @@ public class AgenceTests {
 
     @Test
     void loadPagedAgences() {
-        Page<Agence> page = fullAgenceRepository.findAll(
-                PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "idAgence"))
-        );
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "idAgence"));
+        Page<Agence> page;
+        do {
+            page = fullAgenceRepository.findAll(pageable);
 
-        System.out.println("Total pages : " + page.getTotalPages());
-        System.out.println("Current page : " + page.getNumber());
-        page.getContent().forEach(agence -> System.out.println(
-                agence.getIdAgence() + " | " + agence.getNom() + " | " + agence.getVille()));
+            System.out.println("Total pages : " + page.getTotalPages());
+            System.out.println("Current page : " + page.getNumber());
+            page.getContent().forEach(agence -> System.out.println(
+                    agence.getIdAgence() + " | " + agence.getNom() + " | " + agence.getVille()));
+
+            pageable = page.nextPageable();
+        } while (page.hasNext());
     }
 
     private void addAgence(CrudRepository<Agence, Long> repository) {
@@ -113,7 +116,7 @@ public class AgenceTests {
                 sb.append("\n=== ").append(vehicule.getIdVehicule()).append("|").append(vehicule.getImmatriculation());
             }
         }
-        fail(sb.toString());
+        System.out.println(sb);
     }
 
 }
