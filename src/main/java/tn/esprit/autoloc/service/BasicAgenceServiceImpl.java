@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BasicAgenceServiceImpl implements IAgenceService {
     private final IAgenceRepository Repository;
+    private final IAgenceSimulation agenceSimulation;
 
     @Override
     public boolean check(Agence agence, boolean isNew) {
@@ -72,7 +73,7 @@ public class BasicAgenceServiceImpl implements IAgenceService {
 
     @Override
     public String simuler(Agence agence, int jours, VehiculeOffre offre) {
-        throw new UnsupportedOperationException("Simulation non supportée");
+        return agenceSimulation.simuler(agence, jours, offre);
     }
 
 }
