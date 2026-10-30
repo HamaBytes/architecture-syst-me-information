@@ -1,30 +1,36 @@
 package tn.esprit.autoloc.service;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.Utils;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.io.RapportSimulationFactory;
 import tn.esprit.autoloc.repository.IAgenceRepository;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
 
 import java.util.List;
 
 @Service
+@Primary
 public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implements IAgenceService {
     private final IAgenceRepository agenceRepository;
     private final IVehiculeRepository vehiculeRepository;
     private final IVehiculeService vehiculeService;
+    private final RapportSimulationFactory rapportFactory;
 
     public AgenceServiceImpl(
             IAgenceRepository agenceRepository,
             IVehiculeRepository vehiculeRepository,
-            IVehiculeService vehiculeService) {
+            IVehiculeService vehiculeService,
+            RapportSimulationFactory rapportFactory) {
         super(agenceRepository);
         this.agenceRepository = agenceRepository;
         this.vehiculeRepository = vehiculeRepository;
         this.vehiculeService = vehiculeService;
+        this.rapportFactory = rapportFactory;
     }
 
     @Override
@@ -72,7 +78,10 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
     }
 
     @Override
-    public String simuler(Long id, int nombreJours, VehiculeOffre offre) {
+    public String simuler(Agence agence, int nombreJours, VehiculeOffre offre) {
+        if (agence == null) {
+            throw new IllegalArgumentException("L'agence est obligatoire.");
+        }
         if (nombreJours <= 0) {
             throw new IllegalArgumentException("Le nombre de jours doit être positif.");
         }
@@ -80,15 +89,11 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
             throw new IllegalArgumentException("L'offre est obligatoire.");
         }
 
-        Agence agence = findById(id);
-        List<Vehicule> vehicules = vehiculeRepository.findByAgence_IdAgence(id);
-        double total = vehicules.stream()
+        double total = agence.getVehicules().stream()
                 .mapToDouble(vehicule -> vehiculeService.calculTarif(vehicule, nombreJours, offre))
                 .sum();
 
-        return "Agence " + agence.getIdAgence() + " | " + agence.getNom()
-                + " | " + agence.getTelephone()
-                + System.lineSeparator() + "Total des tarifs (" + nombreJours + " jours, " + offre + ") : "
-                + String.format(java.util.Locale.ROOT, "%.2f", total);
+        return rapportFactory.creer()
+                .generer(agence, nombreJours, offre, total);
     }
 }

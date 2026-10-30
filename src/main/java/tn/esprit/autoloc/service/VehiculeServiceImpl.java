@@ -5,11 +5,17 @@ import tn.esprit.autoloc.Utils;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
+import tn.esprit.autoloc.service.strategy.OffreStrategyFactory;
 
 @Service
 public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> implements IVehiculeService {
-    public VehiculeServiceImpl(IVehiculeRepository repository) {
+    private final OffreStrategyFactory offreStrategyFactory;
+
+    public VehiculeServiceImpl(
+            IVehiculeRepository repository,
+            OffreStrategyFactory offreStrategyFactory) {
         super(repository);
+        this.offreStrategyFactory = offreStrategyFactory;
     }
 
     @Override
@@ -56,15 +62,6 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
         if (offre == null) {
             throw new IllegalArgumentException("L'offre est obligatoire.");
         }
-
-        double tarif = vehicule.getTarifJournalier().doubleValue() * nombreJours;
-        return switch (offre) {
-            case STANDARD -> tarif;
-            case WEEKEND -> tarif * 0.80;
-            case LONGUE_DUREE -> {
-                double tarifReduit = tarif * 0.75;
-                yield tarifReduit > 2000 ? tarifReduit * 0.95 : tarifReduit;
-            }
-        };
+        return offreStrategyFactory.getStrategy(offre).calculer(vehicule, nombreJours);
     }
 }

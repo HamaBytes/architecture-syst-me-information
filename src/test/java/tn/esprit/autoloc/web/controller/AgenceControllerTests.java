@@ -132,7 +132,12 @@ class AgenceControllerTests {
 
     @Test
     void simulateAgencyAcceptsDurationAndOfferQueryParameters() throws Exception {
-        when(agenceService.simuler(3L, 2, VehiculeOffre.WEEKEND))
+        Agence agence = new Agence();
+        agence.setIdAgence(3L);
+        agence.setNom("Agence Sfax");
+        agence.setTelephone("72000000");
+        when(agenceService.findById(3L)).thenReturn(agence);
+        when(agenceService.simuler(agence, 2, VehiculeOffre.WEEKEND))
                 .thenReturn("Agence 3 | Agence Sfax | 72000000\nTotal des tarifs (2 jours, WEEKEND) : 160.00");
 
         mockMvc.perform(get("/agences/3/simuler")

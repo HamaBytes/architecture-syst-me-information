@@ -86,7 +86,8 @@ public class AgenceController {
             @PathVariable Long id,
             @Parameter(description = "Nombre de jours de location") @RequestParam int nombreJours,
             @Parameter(description = "Type d'offre") @RequestParam VehiculeOffre offre) {
-        return agenceService.simuler(id, nombreJours, offre);
+        Agence agence = agenceService.findById(id);
+        return agenceService.simuler(agence, nombreJours, offre);
     }
 
 }

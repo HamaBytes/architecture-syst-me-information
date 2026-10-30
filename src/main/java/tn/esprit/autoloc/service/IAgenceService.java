@@ -5,5 +5,5 @@ import tn.esprit.autoloc.domain.Agence;
 
 public interface IAgenceService extends IGenericService<Agence, Long> {
     boolean hasVehicules(Long id);
-    String simuler(Long id, int nombreJours, VehiculeOffre offre);
+    String simuler(Agence agence, int nombreJours, VehiculeOffre offre);
 }

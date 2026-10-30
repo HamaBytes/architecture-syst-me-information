@@ -5,8 +5,13 @@ import org.junit.jupiter.api.Test;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
+import tn.esprit.autoloc.service.strategy.LongueDureeOffreStrategy;
+import tn.esprit.autoloc.service.strategy.OffreStrategyFactory;
+import tn.esprit.autoloc.service.strategy.StandardOffreStrategy;
+import tn.esprit.autoloc.service.strategy.WeekendOffreStrategy;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,7 +22,12 @@ class VehiculeServiceTests {
 
     @BeforeEach
     void setUp() {
-        service = new VehiculeServiceImpl(mock(IVehiculeRepository.class));
+        service = new VehiculeServiceImpl(
+                mock(IVehiculeRepository.class),
+                new OffreStrategyFactory(List.of(
+                        new StandardOffreStrategy(),
+                        new WeekendOffreStrategy(),
+                        new LongueDureeOffreStrategy())));
     }
 
     @Test
