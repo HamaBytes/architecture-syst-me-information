@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IContratService;
 @Tag(name = "Contrats")
 public class ContratController extends GenericCrudController<Contrat> {
     public ContratController(IContratService service) {
-        super(service);
+        super(service, service);
     }
 }

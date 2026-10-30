@@ -5,7 +5,10 @@ import tn.esprit.autoloc.exception.ResourceNotFoundException;
 
 import java.util.List;
 
-public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID> {
+public abstract class GenericServiceImpl<T, ID> implements
+        IGenericReadService<T, ID>,
+        IGenericWriteService<T, ID>,
+        IGenericValidationService<T> {
     protected final JpaRepository<T, ID> repository;
 
     protected GenericServiceImpl(JpaRepository<T, ID> repository) {

@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IEquipmentService;
 @Tag(name = "Equipments")
 public class EquipmentController extends GenericCrudController<Equipment> {
     public EquipmentController(IEquipmentService service) {
-        super(service);
+        super(service, service);
     }
 }

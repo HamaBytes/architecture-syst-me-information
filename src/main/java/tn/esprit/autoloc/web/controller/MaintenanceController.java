@@ -11,6 +11,6 @@ import tn.esprit.autoloc.service.IMaintenanceService;
 @Tag(name = "Maintenances")
 public class MaintenanceController extends GenericCrudController<Maintenance> {
     public MaintenanceController(IMaintenanceService service) {
-        super(service);
+        super(service, service);
     }
 }
